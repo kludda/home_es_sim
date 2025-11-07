@@ -1,0 +1,8 @@
+pvlib
+pandas
+matplotlib
+gql[all]
+pulp
+PyYAML
+aquarel
+blume
