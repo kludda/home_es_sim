@@ -31,7 +31,7 @@ def get_frame(name: str, params: dict, year=None) -> pd.DataFrame:
     if isinstance(year, int):
         logger.debug("Got year. Rolling simulation to: " + str(year))
         # Move to year
-        df = pvlib.iotools.pvgis._coerce_and_roll_tmy(df, None, year)
+        df = project.roll_frame(frame=df, toyear=year)
 
     return df
 
