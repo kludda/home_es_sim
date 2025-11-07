@@ -365,6 +365,7 @@ Example PV + battery, and PVx2 + battery:
     discount rate: *npvrate
     time: *npvtime
     investment: 140000
+    addsavings: 2775
 
 - name: PV West + PV East + Battery C15
   year: *year
@@ -391,11 +392,16 @@ The `simulate` tag defines a simulation. This is normally a storage.
 `simulate` is one tag.  
 `storage` is one tag.
 
+Additional tags for npv:
+
+**addsavings**: Additional annual savings from this configuration. Maybe you can go from 25 to 20A main fuse if you have a battery? Default 0. Can be omitted
+
+
 Additional tags for the simulation:
 
 **soc min**: factor of battery capacity for minimum charge. Sometimes you wish to ensure you always have a little left; maybe for backup island mode, or for unexpected loads during peak (maybe test what `soc min: 0` vs.  `soc min: 0.134` does for the annual savings vs. what you expect the outliers would cost). Default 0. Can be omitted
 
-**soc max**: factor of battery capacity for maximum charge. Maybe your battery chemistry don't like to be charged to 100%?. Default 1. Can be omitted
+**soc max**: factor of battery capacity for maximum charge. Maybe your battery chemistry don't like to be charged to 100%? Default 1. Can be omitted.
 
 
 # A note on the code
