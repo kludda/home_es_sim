@@ -3,6 +3,7 @@ import pandas as pd
 import yaml
 import re
 import argparse
+import pvlib
 
 from . import location
 
@@ -26,7 +27,10 @@ def save_frame(slug: str, frame: pd.DataFrame) -> str:
     frame.to_pickle(file)
     return file
 
-
+def roll_frame(frame: pd.DataFrame, toyear:int) -> pd.DataFrame:
+    df = pvlib.iotools.pvgis._coerce_and_roll_tmy(frame, None, toyear)
+    return df
+    
 # Project definition helpers
 
 _project = None
