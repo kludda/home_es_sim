@@ -8,10 +8,10 @@ location:
 
 grid: &grid
   name: Home grid
-  capacity: 17.25 # kW. 230VAC * 25A * 3 / 1000
+  capacity: 13.8 # kW. 230VAC * 20A * 3 / 1000
   import price: 
     tibber:
-      transfer price fixed: 0.7987 # transfer tarrif 0.25 + energy tax 0.5487 = 0.639
+      transfer price fixed: 0.639 # transfer tarrif 0.2 + energy tax 0.439 = 0.639
       price vat: 1.25
   export price:
     tibber:
@@ -114,6 +114,7 @@ report:
     discount rate: *npvrate
     time: *npvtime
     investment: 140000
+    addsavings: 2775
 
 - name: PV West + PV East + Battery C15
   year: *year
@@ -133,3 +134,4 @@ report:
     discount rate: *npvrate
     time: *npvtime
     investment: 180000
+    addsavings: 2775
