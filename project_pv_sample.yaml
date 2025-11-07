@@ -1,0 +1,31 @@
+location:
+  name: Sample address
+  latitude: 59.4
+  longitude: 17.86
+  altitude: 13
+  timezone: Europe/Stockholm
+  
+source:
+- name: Main building west
+  pv simulate:
+    inverter: "Fronius International GmbH: Fronius Symo 10.0-3 480 [480V]"
+    arrays:
+    - tilt: 45
+      azimuth: 265
+      module: JA Solar JAM72S30-555/MR
+      mount: close_mount_glass_glass
+      modules per string: 6
+      strings: 2
+
+- name: Main building east
+  pv simulate:
+    inverter: "Fronius International GmbH: Fronius Symo 10.0-3 480 [480V]"
+    arrays:
+    - tilt: 45
+      azimuth: 85
+      module: JA Solar JAM72S30-555/MR
+      mount: close_mount_glass_glass
+      modules per string: 6
+      strings: 2
+
+report:

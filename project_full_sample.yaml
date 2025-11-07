@@ -1,0 +1,135 @@
+location:
+  name: Sample address
+  latitude: 59.4
+  longitude: 17.86
+  altitude: 13
+  timezone: Europe/Stockholm
+
+
+grid: &grid
+  name: Home grid
+  capacity: 17.25 # kW. 230VAC * 25A * 3 / 1000
+  import price: 
+    tibber:
+      transfer price fixed: 0.7987 # transfer tarrif 0.25 + energy tax 0.5487 = 0.639
+      price vat: 1.25
+  export price:
+    tibber:
+      transfer price fixed: 0.05 # grid benefit 0.05
+      price vat: 1
+
+
+load:
+- &home_consumption
+  name: Home consumption
+  tibber:
+
+
+source: &source_all
+- &pv_west
+  name: Main building west
+  pv simulate:
+    inverter: "Fronius International GmbH: Fronius Symo 10.0-3 480 [480V]"
+    arrays:
+    - tilt: 45
+      azimuth: 265
+      module: JA Solar JAM72S30-555/MR
+      mount: close_mount_glass_glass
+      modules per string: 4
+      strings: 2
+    - tilt: 45
+      azimuth: 265
+      module: JA Solar JAM72S30-555/MR
+      mount: close_mount_glass_glass
+      modules per string: 4
+      strings: 2
+
+- &pv_east
+  name: Main building east
+  pv simulate:
+    inverter: "Fronius International GmbH: Fronius Symo 10.0-3 480 [480V]"
+    arrays:
+    - tilt: 45
+      azimuth: 85
+      module: JA Solar JAM72S30-555/MR
+      mount: close_mount_glass_glass
+      modules per string: 6
+      strings: 2
+
+
+storage:
+- &batt_c15r10
+  name: Battery C15 R10
+  battery:
+    capacity: 15
+    rate: 10
+    charge efficiency: 0.95
+    discharge efficiency: 0.95
+    degradation cost: 0
+
+
+common:
+- &npvrate 0.03
+- &npvtime 20
+- &year 2023
+
+
+report:
+- &npvnorm
+  name: Current setup
+  year: *year
+  compose:
+    grid: *grid
+    load: 
+      - *home_consumption
+
+- name: PV West
+  year: *year
+  compose:
+    grid: *grid
+    load: 
+      - *home_consumption
+    source:
+      - *pv_west
+  npv:
+    compare: *npvnorm
+    discount rate: *npvrate
+    time: *npvtime
+    investment: 70000
+
+- name: PV West + Battery C15
+  year: *year
+  compose:
+    grid: *grid
+    load: 
+      - *home_consumption
+    source:
+      - *pv_west
+  simulate:
+    storage: *batt_c15r10
+    soc min: 0.134
+    soc max: 1
+  npv:
+    compare: *npvnorm
+    discount rate: *npvrate
+    time: *npvtime
+    investment: 140000
+
+- name: PV West + PV East + Battery C15
+  year: *year
+  compose:
+    grid: *grid
+    load: 
+      - *home_consumption
+    source:
+      - *pv_west
+      - *pv_east
+  simulate:
+    storage: *batt_c15r10
+    soc min: 0.134
+    soc max: 1
+  npv:
+    compare: *npvnorm
+    discount rate: *npvrate
+    time: *npvtime
+    investment: 180000
