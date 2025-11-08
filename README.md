@@ -159,10 +159,10 @@ Example project definition file entry:
 ```
 grid: &grid
   name: Home grid
-  capacity: 17.25 # kW. 230VAC * 25A * 3 / 1000
+  capacity: 13.8 # kW. 230VAC * 20A * 3 / 1000
   import price: 
     tibber:
-      transfer price fixed: 0.7987 # transfer tarrif 0.25 + energy tax 0.5487 = 0.639
+      transfer price fixed: 0.639 # transfer tarrif 0.2 + energy tax 0.439 = 0.639
       price vat: 1.25
   export price:
     tibber:
@@ -213,13 +213,7 @@ source:
       azimuth: 265
       module: JA Solar JAM72S30-555/MR
       mount: close_mount_glass_glass
-      modules per string: 4
-      strings: 2
-    - tilt: 45
-      azimuth: 265
-      module: JA Solar JAM72S30-555/MR
-      mount: close_mount_glass_glass
-      modules per string: 4
+      modules per string: 5
       strings: 2
 
 - &pv_east
@@ -231,7 +225,7 @@ source:
       azimuth: 85
       module: JA Solar JAM72S30-555/MR
       mount: close_mount_glass_glass
-      modules per string: 6
+      modules per string: 5
       strings: 2
 ```
 
