@@ -541,8 +541,11 @@ def do_report() -> []:
             ax['cost'].bar(data=da, x=values, height=da['Cost: Annual grid energy cost'], color=colors)
             ax['energy'].bar(data=da, x=values, height=da['Energy: Annual grid import'], color=colors) # + offset
             ax['energy'].bar(data=da, x=values, height=da['Energy: Annual grid export'], color=colors, alpha=0.8) # + offset
-            ax['nv'].bar(data=da, x=values, height=da['Investment: Present value'], color=colors)
-            ax['nnv'].bar(data=da, x=values, height=da['Investment: Net present value'], color=colors)
+            
+            if not nv == None:
+                ax['nv'].bar(data=da, x=values, height=da['Investment: Present value'], color=colors)
+                ax['nnv'].bar(data=da, x=values, height=da['Investment: Net present value'], color=colors)
+
 
             ax['cost'].set_xticklabels([])
             ax['energy'].set_xticklabels([])
