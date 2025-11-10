@@ -150,6 +150,8 @@ location:
 **The simulation** need the price of purchased energy, and the price of sold energy, for each hour for a full year. 
 Unfortunately historical spot prices are no longer free from [Nord pool](https://www.nordpoolgroup.com/).
 
+<a name="grid_tibber"></a>
+#### Tibber
 At this point only Tibber is supported to get this data. You can get it using the following command
 `python -m home_es_sim.io.tibber --log info -d data -p project.yaml tibbertoken=demo year=2024`
 
@@ -181,9 +183,12 @@ grid: &grid
 ### Loads
 **Load**: Something that "consumes" energy on your side of the grid connection.
 
-There can be many loads. At this point only home consumption from Tibber is developed. Importing from CSV could easily be added. One can imagine other loads e.g. simulated EV charging.
+There can be many loads. At this point only home consumption from Tibber and EON is developed. One can imagine other loads e.g. simulated EV charging.
 
-**The simulation** need the consumption of your home, for each hour for a full year. At this point only Tibber is supported to get this data. Using the command in *Grid* will get this data.
+**The simulation** need the consumption of your home, for each hour for a full year.
+
+#### Tibber
+Using the [command in *Grid* ](#grid_tibber) will get this data.
 
 Example project definition file entry:
 ```
@@ -192,6 +197,29 @@ load:
   name: Home consumption
   tibber:
 ```
+
+#### EON
+
+
+<img src="images/eon_mobile.jpg" width="15%" /> <img src="images/eon_web.png" width="50%" />
+
+You can download your data from EON in the app and on the [web](https://www.eon.se/mitt-e-on/din-forbrukning#/).
+
+Use detail level `hourly`.
+
+Get data for all the years you want to simulate. Set `start date` a day before new year and `end date` a day after new year (this is due to tool working in UTC and will not accept missing hours).
+
+Rename the downloaded file to something descriptive and put it in your `data` folder. 
+
+Example project definition file entry:
+```
+load:
+- &home_consumption
+  name: Home consumption
+  eon:
+    from csv: eon_load.csv
+```
+
 
 ### Sources
 **Source**: Something that "generates" energy on your side of the grid connection.
