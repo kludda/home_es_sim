@@ -2,6 +2,7 @@ import pandas as pd
 
 from .. import utils as project
 from . import tibber
+from . import eon
 
 import logging
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ def get_frame(year=None, params=None) -> pd.DataFrame:
         try:
             m['tibber']
         except:
-            logger.info("not tibber")
+            pass
         else:
             df_m = tibber.get_frame(name=m['name'], params=m['tibber'], year=year)
             if first == True:
@@ -33,6 +34,21 @@ def get_frame(year=None, params=None) -> pd.DataFrame:
                 df = df_m
             else:
                 df['load'] += df_m['load']
+
+        try:
+            m['eon']
+        except:
+            pass
+        else:
+            df_m = eon.get_frame(name=m['name'], params=m['eon'], year=year)
+            if first == True:
+                first = False
+                df = df_m
+            else:
+                df['load'] += df_m['load']
+                
+                
+                
 
     return df
 
