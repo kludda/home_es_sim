@@ -158,8 +158,7 @@ def get_cli():
     
     req_grp.add_argument('-p',
                         dest='simulation_file', 
-                        help='File path containing project definition, default ./project.yaml', 
-                        default='./project.yaml', 
+                        help='File path containing project definition. Relative from current folder.', 
                         type=str, 
                         required=True 
                         )
@@ -167,8 +166,7 @@ def get_cli():
     req_grp.add_argument(
                         '-d',
                         dest='data_dir', 
-                        help='Path to folder where data will be saved.', 
-                        default='./data', 
+                        help='Path to folder where data will be saved. Relative from current folder.', 
                         type=str, 
                         required=True 
                         )
@@ -176,8 +174,8 @@ def get_cli():
     parser.add_argument(
                         '-o',
                         dest='output', 
-                        help='Output report filename. Will overwrite if exist.', 
-                        default='./report.pdf', 
+                        help='Output report filename. Will overwrite if exist. Default: report.pdf', 
+                        default='report.pdf', 
                         type=str
                         )
                         

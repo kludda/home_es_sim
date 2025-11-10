@@ -19,7 +19,8 @@ git clone https://github.com/kludda/home_es_sim.git
 ```
 Enter `home_es_sim` folder.
 
-Not neccesary but recommended; set up a virtual environment for python and activate:
+Not neccesary but recommended; set up a [virtual environment for python](https://docs.python.org/3/library/venv.html) and activate (commands are for Windows, if you're un *nix you probably know already):
+
 ```
 python -m venv .\.venv 
 .\.venv\Scripts\activate
@@ -27,7 +28,7 @@ python -m venv .\.venv
 
 Install required modules:
 ```
-python -m pip install -r .\requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## Example usage
@@ -77,7 +78,7 @@ Edit `project_pv_sample.yaml` to your specification (or skip if you just want to
 
 Run simulation:
 
-`python run.py --log info -d .\data -p .\project_pv_sample.yaml -o report_pv.pdf`
+`python run.py --log info -d data -p project_pv_sample.yaml -o report_pv.pdf`
 
 Results are in `report_pv.pdf` in the same folder.
 
@@ -101,14 +102,14 @@ Edit `project_full_sample.yaml` [project definition file](#project_definition_fi
 
 Get data from Tibber:
 ```
-python -m home_es_sim.io.tibber --log info -d .\data\ -p .\project_full_sample.yaml tibbertoken=demo year=2023
+python -m home_es_sim.io.tibber --log info -d data -p project_full_sample.yaml tibbertoken=demo year=2023
 ```
 Substitute `demo` with your API token from [developer.tibber.com](https://developer.tibber.com) or keep `demo` if you just want to test the tool.
 `year` is the year for which you want to get data.
 
 Run the simulation:
 ```
-python run.py --log info  -d .\data\ -p .\project_full_sample.yaml -o report_full.pdf
+python run.py --log info  -d data -p project_full_sample.yaml -o report_full.pdf
 ```
 
 Results are in `report_full.pdf` in the same folder.
@@ -150,7 +151,7 @@ location:
 Unfortunately historical spot prices are no longer free from [Nord pool](https://www.nordpoolgroup.com/).
 
 At this point only Tibber is supported to get this data. You can get it using the following command
-`python -m home_es_sim.io.tibber --log info -d .\data\ -p .\project.yaml tibbertoken=demo year=2024`
+`python -m home_es_sim.io.tibber --log info -d data -p project.yaml tibbertoken=demo year=2024`
 
 Substitute `demo` with your API token from [developer.tibber.com](https://developer.tibber.com).  
 `year` is the year for which you want to get data.
