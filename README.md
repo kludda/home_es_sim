@@ -8,6 +8,13 @@ This is a personal hobby project of mine. I built it for myself to make an educa
 
 &#x2615; [Buy me a coffee :)](https://paypal.me/davidalind)
 
+## TL;DR
+* Define several energy systems in a YAML.
+* Simulate PV array hourly energy production for a typical metrological year.
+* Get actual hourly data on home consumtion and grid energy price.
+* Combine the above and use a LP solver to minimize grid cost by "charging and discharging" a battery.
+* Make a PDF report with the results; energy flow, calculate NPV, compare configurations...
+
 <a name="inital_setup"></a>
 ## Inital setup
 
@@ -19,7 +26,7 @@ git clone https://github.com/kludda/home_es_sim.git
 ```
 Enter `home_es_sim` folder.
 
-Not neccesary but recommended; set up a [virtual environment for python](https://docs.python.org/3/library/venv.html) and activate (commands are for Windows, if you're un *nix you probably know already):
+Not neccesary but recommended; set up a [virtual environment for python](https://docs.python.org/3/library/venv.html) and activate (commands are for Windows, if you're on *nix you probably know already :) ):
 
 ```
 python -m venv .\.venv 
@@ -94,7 +101,7 @@ For a home ES simulation the tool need your:
 \- consumption of your home.  
 for each hour for a full year.
 
-At this point the tool can help you get this data from Tibber.
+The tool can help you get this data if you buy your energy from [Tibber](https://tibber.com/). (Demo data can be retrieved by anyone.)
 
 Follow [inital setup](#inital_setup).
 
@@ -104,8 +111,7 @@ Get data from Tibber:
 ```
 python -m home_es_sim.io.tibber --log info -d data -p project_full_sample.yaml tibbertoken=demo year=2023
 ```
-Substitute `demo` with your API token from [developer.tibber.com](https://developer.tibber.com) or keep `demo` if you just want to test the tool.
-`year` is the year for which you want to get data.
+Substitute `demo` with your API token from [developer.tibber.com](https://developer.tibber.com) or keep `demo` if you just want to test the tool. `year` is the year for which you want to get data.
 
 Run the simulation:
 ```
@@ -122,12 +128,12 @@ Sample report page with configuration simulation results:
 ## Project definition file
 
 ### General
-Most `name` entries are used for filenames and must be unique.
+Most `name` entries are used for filenames and **must be unique**, else the result will be wrong. The tool won't check for this.
 
 The project definition file is in [YAML](https://yaml.org). Unless you only make minor changes, you should be familiar with [the basics (2.1)](https://yaml.org/spec/1.2.2/#chapter-2-language-overview), and `anchors` and `aliases` ([example 2.9 - 2.10](https://yaml.org/spec/1.2.2/#22-structures))
 
 ### Location
-All tags are required. At this point this data is used for PV simulaton.
+All tags are required.
 
 Example project definition entry:
 ```
@@ -177,7 +183,7 @@ grid: &grid
 
 **transfer price fixed**: the tariffs added by the grid owner.
 
-**price vat**: 1 + the VAT.
+**price vat**: 1 + the VAT in decimal.
 
 
 ### Loads
@@ -207,7 +213,7 @@ You can download your data from EON in the app and on the [web](https://www.eon.
 
 Use detail level `hourly`.
 
-Get data for all the years you want to simulate. Set `start date` a day before new year and `end date` a day after new year (this is due to tool working in UTC and will not accept missing hours).
+Get data for all the years you want to simulate in one single download. Set `start date` a day before new year and `end date` a day after new year (this is due to this tool working in UTC and will not accept missing hours).
 
 Rename the downloaded file to something descriptive and put it in your `data` folder. 
 
@@ -224,11 +230,14 @@ load:
 ### Sources
 **Source**: Something that "generates" energy on your side of the grid connection.
 
-There can be many sources. At this point only PV simulation is developed. For existing PV systems production data is available in the Tibber API and could be developed. Importing from CSV could easily be added. One can imagine other loads e.g. actual or simulated hydro.
+
+There can be many sources. At this point only PV simulation is developed. Importing from CSV could easily be added (see EON home consumption import). One can imagine other loads e.g. actual or simulated hydro.
 
 #### PV simulation
 
 The simulation uses [PVLIB](https://pvlib-python.readthedocs.io/en/stable/). The generated energy will be based on a [Typical Meteorological Year (TMY)](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/pvgis-tools/pvgis-typical-meteorological-year-tmy-generator_en) and will be the same regardless of which year you use for home consumption data. This obviously creates a mismatch between the actual weather causing the consumption and the simulated PV energy.
+
+PVLIB support e.g. defining a [horizon shading the PV array ](https://pvlib-python.readthedocs.io/en/stable/gallery/shading/plot_simple_irradiance_adjustment_for_horizon_shading.html) and much more. For simplicity this is not supported by this tool.
 
 Example project definition file entry:
 ```
@@ -294,7 +303,7 @@ storage:
     degradation cost: 0
 ```
 
-**capacity**: In kWh. You can define max and min SOC for each simulation.
+**capacity**: In kWh. (You can define max and min SOC for each simulation, as described later.)
 
 **rate**: Charge and discharge rate in kW.
 
@@ -311,7 +320,7 @@ The report tag contains the different configuration you want to include in your 
 
 The report will also contain a comparison between different configurations and a comparison of sources (if defined).
 
-The tool can calculate [the present and net present value](https://en.wikipedia.org/wiki/Net_present_value) of your investment in energy systems. The "cash flow" in the calculation is the difference in grid energy cost. First we can add a collection with arbitrary unique name where we can set some common values for all configurations so that we can easily change later:
+The tool can calculate [the present and net present value](https://en.wikipedia.org/wiki/Net_present_value) of your investment in energy systems. The "cash flow" in the calculation is the difference in grid energy cost (assuming the difference will be the same each year, which is obviously not the case in real life). First we can add a collection with arbitrary unique name where we can set some common values for all configurations so that we can easily change later:
 
 ```
 common:
@@ -320,9 +329,9 @@ common:
 - &year 2023
 ```
 
-A baseline needs to be defined so start the report with your current setup. Often this is just the grid connection and the home consumption. We use alias to get the information previously entered. We also define an anchor `&npvnorm` for this configuration.
+A baseline needs to be defined, so start the report with how your home is setup today. Often this is just the grid connection and the home consumption. We use alias to get the information previously entered. We also define an anchor `&npvnorm` for this configuration.
 
-The `compose` tag defines the data to collect to optionally send to a simulation.
+The `compose` tag defines the data to collect (and optionally send to a simulation).
 
 `report` is a sequence.  
 `grid` is one tag.  
@@ -339,7 +348,7 @@ report:
       - *home_consumption
 ```
 
-Then we can start to add configurations we'd like to evaluate. 
+Then we can start to add additional configurations we'd like to evaluate. 
 
 Example PV only:
 ```
@@ -360,9 +369,9 @@ Example PV only:
 
 **compare**: The configuration to compare grid energy cost with.
 
-**discount rate**: Percentage as decimal: 3% = 0.03. In this case the interest rate you'd get if you invested the money elsewhere (savings account, stock market, ...)
+**discount rate**: Percentage as decimal: 3% = 0.03. In this case the interest rate you'd get if you invested the money elsewhere (savings account, stock market, ...) or the interest rate for the loan you take to finanze the energy system.
 
-**time**: Years. In this case maybe the expected lifetime of the energy system is a reasonable figure.
+**time**: Years. In this case maybe the expected lifetime of the energy system is a reasonable figure. Or if you want, say, a 10y ROI.
 
 **investment**: The amount of money this configuration would cost you.
 
@@ -430,17 +439,16 @@ Additional tags for the simulation:
 # A note on the code
 I'm a mechanical design engineer, not a software engineer. I got a POC running quite quick but refactoring modules etc. proved to be very time consuming for me and towards the end, especially with the code for the report generation, I simply had to "get it done".
 
-I've learned **a lot** and it was fun. I probably won’t do much more development unless I need some new functionality my self.
-
+I've learned **a lot** and it was fun.
 
 # Acknowledgment
 I could not have done this without (additional to the python standard library):
 
-\- [PuLP](https://coin-or.github.io/pulp/)  
 \- [PVLIB](https://pvlib-python.readthedocs.io/)  
-\- [Matplotlib](https://matplotlib.org/)  
 \- [Pandas](https://pandas.pydata.org/)  
-\- [Blume](https://blume.readthedocs.io/)  
+\- [Matplotlib](https://matplotlib.org/)  
+\- [PuLP](https://coin-or.github.io/pulp/)  
 \- [PyYAML](https://pyyaml.org/)  
 \- [GQL](https://gql.readthedocs.io/)  
+\- [Blume](https://blume.readthedocs.io/)  
 \- [aquarel](https://aquarel.readthedocs.io/)  
